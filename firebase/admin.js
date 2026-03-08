@@ -7,8 +7,12 @@ let credentialSettings;
 
 // Check if we have the private key string in env vars
 if (process.env.FIREBASE_PRIVATE_KEY) {
-  // Replace literal '\n' with actual newlines
-  const privateKey = process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n");
+  // Replace literal '\n' with actual newlines and remove surrounding quotes if Vercel added them
+  let privateKeyStr = process.env.FIREBASE_PRIVATE_KEY;
+  if (privateKeyStr.startsWith('"') && privateKeyStr.endsWith('"')) {
+    privateKeyStr = privateKeyStr.slice(1, -1);
+  }
+  const privateKey = privateKeyStr.replace(/\\n/g, "\n");
 
   credentialSettings = admin.credential.cert({
     projectId: process.env.FIREBASE_PROJECT_ID,
